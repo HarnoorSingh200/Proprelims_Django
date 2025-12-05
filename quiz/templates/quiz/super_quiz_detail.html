@@ -1,0 +1,25 @@
+{% extends 'quiz/base.html' %}
+{% block title %}{{ quiz.quiz_name }} - Pro Prelims{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <h2 class="mb-4">{{ quiz.quiz_name }}</h2>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <p class="card-text"><strong>Total Questions:</strong> {{ quiz.total_questions }}</p>
+      <p class="card-text"><strong>Parts:</strong> {{ quiz.part_count }}</p>
+      <p class="card-text"><strong>Questions per Part:</strong> {{ quiz.questions_per_part }}</p>
+      <div class="mb-3">
+        <strong>Tags:</strong>
+        {% for tag in quiz.exam_tags %}
+          <span class="badge bg-light text-dark border me-1 mb-1">{{ tag }}</span>
+        {% endfor %}
+      </div>
+      <form method="POST" action="{% url 'super_quiz_instructions' quiz.quiz_id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Proceed to Instructions</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

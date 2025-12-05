@@ -1,0 +1,98 @@
+{% extends "quiz/base.html" %}
+{% load i18n socialaccount %}
+
+{% block title %}Sign Up - Pro Prelims{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white" style="background: var(--primary-gradient); color: white;">
+        <h3 class="mb-0"><i class="fa fa-user-plus me-2"></i>Sign Up</h3>
+      </div>
+      <div class="card-body">
+        <!-- Google Signup -->
+        <div class="d-grid mb-4">
+          <a href="{% provider_login_url 'google' %}" class="btn btn-light border d-flex align-items-center justify-content-center gap-2 py-2">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" width="20" height="20">
+            <span>Sign in with Google</span>
+          </a>
+        </div>
+
+        <div class="text-center mb-4">
+          <hr>
+          <span class="text-muted px-3" style="position: relative; top: -12px; background: var(--glass-bg);">or create account with email</span>
+        </div>
+
+        <!-- Form Errors -->
+        {% if form.errors or form.non_field_errors %}
+          <div class="alert alert-danger">
+            <strong>Please correct the following errors:</strong>
+            <ul class="mb-0">
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <!-- Signup Form -->
+        <form method="POST" action="{% url 'account_signup' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_username" class="form-label">Username *</label>
+            <input type="text" name="username" class="form-control" id="id_username" placeholder="Choose a username" required
+                   value="{{ form.username.value|default:'' }}" autocomplete="username">
+            <div class="form-text">This will be displayed as your name on the site.</div>
+          </div>
+          <div class="mb-3">
+            <label for="id_email" class="form-label">Email *</label>
+            <input type="email" name="email" class="form-control" id="id_email" placeholder="Enter your email" required
+                   value="{{ form.email.value|default:'' }}" autocomplete="email">
+          </div>
+          <div class="mb-3">
+            <label for="id_password1" class="form-label">Password *</label>
+            <input type="password" name="password1" class="form-control" id="id_password1" placeholder="Enter your password" required
+                   autocomplete="new-password">
+            <div class="form-text">
+              <small>
+                • At least 8 characters<br>
+                • Can't be a common password<br>
+                • Can't be entirely numeric
+              </small>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="id_password2" class="form-label">Confirm Password *</label>
+            <input type="password" name="password2" class="form-control" id="id_password2" placeholder="Confirm your password" required
+                   autocomplete="new-password">
+          </div>
+          {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <div class="mb-3 form-check">
+            {{ form.accept_terms }}
+            <label class="form-check-label" for="{{ form.accept_terms.id_for_label }}">
+              I agree to the <a href="{% url 'terms_of_service' %}" target="_blank">Terms of Service</a> and
+              <a href="{% url 'privacy_policy' %}" target="_blank">Privacy Policy</a>
+            </label>
+            {% if form.accept_terms.errors %}
+              <div class="text-danger small">{{ form.accept_terms.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <button class="btn btn-accent-yellow ms-2 w-100" type="submit"><i class="fa fa-check me-2"></i>Sign Up</button>
+        </form>
+
+        <div class="text-center mt-4">
+          <p>Already have an account? <a href="{% url 'account_login' %}" >Sign In</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

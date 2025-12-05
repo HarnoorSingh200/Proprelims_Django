@@ -1,0 +1,24 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Accept Terms - ProPrelims{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="card mx-auto shadow-sm" style="max-width: 600px;">
+    <div class="card-body">
+      <h2 class="card-title mb-4">Before You Continue</h2>
+      <p class="mb-3">Hi {{ user.username|default:user.email }}, please review and agree to our Terms before using ProPrelims.</p>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="accept" required>
+          <label class="form-check-label" for="accept">
+            I agree to the <a href="{% url 'terms_of_service' %}" target="_blank">Terms of Service</a> and
+            <a href="{% url 'privacy_policy' %}" target="_blank">Privacy Policy</a>.
+          </label>
+        </div>
+        <button class="btn btn-primary" type="submit">Continue</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

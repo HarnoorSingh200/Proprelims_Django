@@ -1,0 +1,475 @@
+{% extends 'quiz/base.html' %}
+{% load i18n %}
+{% block title %}User Profile - Pro Prelims{% endblock %}
+{% block content %}
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+    --accent-yellow: #F59E0B;
+    --accent-yellow-dark: #D97706;
+    --text-primary: #1F2937;
+    --text-secondary: #6B7280;
+    --bg-light: #F9FAFB;
+    --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.1);
+    --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  body {
+    font-family: var(--font-stack);
+    color: var(--text-primary);
+    background-color: var(--bg-light);
+  }
+
+  .bg-primary-gradient {
+    background: var(--primary-gradient);
+    color: white;
+  }
+
+  /* Card Enhancements */
+  .card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-header {
+    background: var(--primary-gradient);
+    color: white;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 12px 12px 0 0;
+    padding: 1rem 1.5rem;
+  }
+
+  .card-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+
+  /* User Info Card */
+  .user-info {
+    padding: 2rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .user-info strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .user-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #E5E7EB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .divider {
+    border-top: 1px solid #E5E7EB;
+    margin: 1.5rem 0;
+  }
+
+  /* Attempt Card Styles */
+  .attempt-card {
+    border-radius: 10px;
+    background: white;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    border-left: 6px solid #4F46E5;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .attempt-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .attempt-header {
+    padding: 1rem 1.5rem;
+    background-color: var(--bg-light);
+    border-bottom: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+  }
+
+  .attempt-body {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .quiz-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-primary);
+  }
+
+  .attempt-date {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+
+  .score-text {
+    font-size: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  .btn-view-solutions {
+    background: #F3F4F6;
+    border: 1px solid #D1D5DB;
+    color: var(--text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-view-solutions:hover {
+    background: #E5E7EB;
+    color: var(--text-primary);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  .btn-view-solutions:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+  }
+
+  /* Tab Styles */
+  .nav-tabs {
+    border-bottom: 2px solid #E5E7EB;
+  }
+
+  .nav-tabs .nav-link {
+    color: var(--text-primary);
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-bottom: 3px solid transparent;
+    transition: color 0.2s ease, border-bottom-color 0.2s ease;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: #4F46E5;
+    border-bottom-color: #4F46E5;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #4F46E5;
+    border-bottom-color: #4F46E5;
+  }
+
+  .nav-tabs .nav-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.3);
+  }
+
+  /* Pagination Styles */
+  .pagination .page-link {
+    border-radius: 6px;
+    margin: 0 0.3rem;
+    color: #4F46E5;
+    border: 1px solid #DEE2E6;
+    transition: all 0.2s ease;
+  }
+
+  .pagination .page-link:hover {
+    background-color: #E5E7EB;
+    color: var(--text-primary);
+  }
+
+  .pagination .page-item.active .page-link {
+    background: var(--primary-gradient);
+    border-color: transparent;
+    color: white;
+  }
+
+  .pagination .page-item.disabled .page-link {
+    color: var(--text-secondary);
+    background-color: #F3F4F6;
+    border-color: #DEE2E6;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .card-header {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 1rem;
+    }
+
+    .user-info {
+      padding: 1.5rem;
+    }
+
+    .user-avatar {
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+
+    .attempt-header,
+    .attempt-body {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .btn-view-solutions {
+      width: 100%;
+      text-align: center;
+      padding: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+    }
+
+    .card-body {
+      padding: 1.25rem;
+    }
+
+    .nav-tabs .nav-link {
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .pagination {
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<div class="container-fluid p-0 p-md-4">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary-gradient">
+      <h4 class="mb-0 d-flex align-items-center">
+        <i class="fa fa-user me-2" aria-hidden="true"></i>
+        <span class="d-none d-sm-inline">User Profile - {{ user.username }}</span>
+        <span class="d-sm-none">Profile</span>
+      </h4>
+    </div>
+
+    <!-- User Info Card -->
+    <div class="card-body user-info">
+      <div class="user-avatar">{{ user.username|slice:":1"|upper }}</div>
+      <h5 class="card-title mb-3">{{ user.username }}</h5>
+      <p class="mb-2"><strong>Username:</strong> {{ user.username }}</p>
+      <p class="mb-0"><strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Quiz Attempts Summary -->
+    <div class="card-body">
+      <h5 class="mb-3">Performance Summary</h5>
+      <div class="row mb-4">
+        <div class="col-md-4">
+          <div class="card text-center p-3">
+            <h6>Attempted Quizzes</h6>
+            <p class="fw-bold mb-0">{{ quiz_page_obj.paginator.count }}</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card text-center p-3">
+            <h6>Attempted Sectional Tests</h6>
+            <p class="fw-bold mb-0">{{ advance_quiz_page_obj.paginator.count }}</p>
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="card text-center p-3">
+            <h6>Attempted Mock Tests</h6>
+            <p class="fw-bold mb-0">{{ super_quiz_page_obj.paginator.count }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Attempts Tabs -->
+      <h5 class="mb-3">Quiz Attempts</h5>
+      <ul class="nav nav-tabs mb-4" id="quizTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="quiz-tab" data-bs-toggle="tab" data-bs-target="#quiz-attempts" type="button" role="tab" aria-controls="quiz-attempts" aria-selected="true">Quizzes</button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="advance-quiz-tab" data-bs-toggle="tab" data-bs-target="#advance-quiz-attempts" type="button" role="tab" aria-controls="advance-quiz-attempts" aria-selected="false">Sectional Tests </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="super-quiz-tab" data-bs-toggle="tab" data-bs-target="#super-quiz-attempts" type="button" role="tab" aria-controls="super-quiz-attempts" aria-selected="false">Mock Tests </button>
+        </li>
+      </ul>
+
+      <div class="tab-content" id="quizTabsContent">
+        <!-- Quiz Attempts -->
+        <div class="tab-pane fade show active" id="quiz-attempts" role="tabpanel" aria-labelledby="quiz-tab">
+          {% if quiz_page_obj %}
+            {% for attempt in quiz_page_obj %}
+              <div class="attempt-card">
+                <div class="attempt-header">
+                  <div class="quiz-name">{{ attempt.quiz.quiz_name }}</div>
+                  <div class="attempt-date">{{ attempt.attempt_date|date:"M d, Y H:i" }}</div>
+                </div>
+                <div class="attempt-body">
+                  <div class="score-text">Score: {{ attempt.score }}/{{ attempt.total_questions }} ({{ attempt.percentage }}%)</div>
+                  <a href="{% url 'quiz_solutions' attempt.quiz.quiz_id %}" class="btn-view-solutions" aria-label="View Solutions for {{ attempt.quiz.quiz_name }}">
+                    <i class="fa fa-book-open" aria-hidden="true"></i>View Solutions
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+            <!-- Pagination for Regular Quizzes -->
+            {% if quiz_page_obj.has_other_pages %}
+              <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Quiz attempts pagination">
+                  <ul class="pagination">
+                    {% if quiz_page_obj.has_previous %}
+                      <li class="page-item">
+                        <a class="page-link" href="?quiz_page={{ quiz_page_obj.previous_page_number }}" aria-label="Previous page">Previous</a>
+                      </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                      <span class="page-link">Page {{ quiz_page_obj.number }} of {{ quiz_page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if quiz_page_obj.has_next %}
+                      <li class="page-item">
+                        <a class="page-link" href="?quiz_page={{ quiz_page_obj.next_page_number }}" aria-label="Next page">Next</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </nav>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center text-muted py-4">No quiz attempts yet.</div>
+          {% endif %}
+        </div>
+
+        <!-- Super Quiz Attempts -->
+        <div class="tab-pane fade" id="super-quiz-attempts" role="tabpanel" aria-labelledby="super-quiz-tab">
+          {% if super_quiz_page_obj %}
+            {% for attempt in super_quiz_page_obj %}
+              <div class="attempt-card">
+                <div class="attempt-header">
+                  <div class="quiz-name">{{ attempt.quiz.quiz_name }}</div>
+                  <div class="attempt-date">{{ attempt.attempt_date|date:"M d, Y H:i" }}</div>
+                </div>
+                <div class="attempt-body">
+                  <div class="score-text">Score: {{ attempt.score }}/{{ attempt.total_questions }} ({{ attempt.percentage }}%)</div>
+                  <a href="{% url 'super_quiz_solutions' attempt.quiz.quiz_id %}" class="btn-view-solutions" aria-label="View Solutions for {{ attempt.quiz.quiz_name }}">
+                    <i class="fa fa-book-open" aria-hidden="true"></i>View Solutions
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+            <!-- Pagination for Super Quizzes -->
+            {% if super_quiz_page_obj.has_other_pages %}
+              <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Super quiz attempts pagination">
+                  <ul class="pagination">
+                    {% if super_quiz_page_obj.has_previous %}
+                      <li class="page-item">
+                        <a class="page-link" href="?super_quiz_page={{ super_quiz_page_obj.previous_page_number }}" aria-label="Previous page">Previous</a>
+                      </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                      <span class="page-link">Page {{ super_quiz_page_obj.number }} of {{ super_quiz_page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if super_quiz_page_obj.has_next %}
+                      <li class="page-item">
+                        <a class="page-link" href="?super_quiz_page={{ super_quiz_page_obj.next_page_number }}" aria-label="Next page">Next</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </nav>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center text-muted py-4">No super quiz attempts yet.</div>
+          {% endif %}
+        </div>
+
+        <!-- Advance Quiz Attempts -->
+        <div class="tab-pane fade" id="advance-quiz-attempts" role="tabpanel" aria-labelledby="advance-quiz-tab">
+          {% if advance_quiz_page_obj %}
+            {% for attempt in advance_quiz_page_obj %}
+              <div class="attempt-card">
+                <div class="attempt-header">
+                  <div class="quiz-name">{{ attempt.quiz.quiz_name }}</div>
+                  <div class="attempt-date">{{ attempt.attempt_date|date:"M d, Y H:i" }}</div>
+                </div>
+                <div class="attempt-body">
+                  <div class="score-text">Score: {{ attempt.score }}/{{ attempt.total_score }} ({{ attempt.percentage }}%)</div>
+                  <a href="{% url 'advance_quiz_solutions' attempt.quiz.quiz_id %}" class="btn-view-solutions" aria-label="View Solutions for {{ attempt.quiz.quiz_name }}">
+                    <i class="fa fa-book-open" aria-hidden="true"></i>View Solutions
+                  </a>
+                </div>
+              </div>
+            {% endfor %}
+            <!-- Pagination for reimbursed -->
+            {% if advance_quiz_page_obj.has_other_pages %}
+              <div class="d-flex justify-content-center mt-4">
+                <nav aria-label="Advance quiz attempts pagination">
+                  <ul class="pagination">
+                    {% if advance_quiz_page_obj.has_previous %}
+                      <li class="page-item">
+                        <a class="page-link" href="?advance_quiz_page={{ advance_quiz_page_obj.previous_page_number }}" aria-label="Previous page">Previous</a>
+                      </li>
+                    {% endif %}
+                    <li class="page-item disabled">
+                      <span class="page-link">Page {{ advance_quiz_page_obj.number }} of {{ advance_quiz_page_obj.paginator.num_pages }}</span>
+                    </li>
+                    {% if advance_quiz_page_obj.has_next %}
+                      <li class="page-item">
+                        <a class="page-link" href="?advance_quiz_page={{ advance_quiz_page_obj.next_page_number }}" aria-label="Next page">Next</a>
+                      </li>
+                    {% endif %}
+                  </ul>
+                </nav>
+              </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center text-muted py-4">No advance quiz attempts yet.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="mt-4">
+        <a href="{% url 'quiz_search_page' %}" class="btn btn-outline-primary" aria-label="Back to Quizzes">
+          <i class="fa fa-arrow-left me-2" aria-hidden="true"></i>Back to Quizzes
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

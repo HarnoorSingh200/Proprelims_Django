@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Pro Prelims - UPSC & SSC Prep{% endblock %}</title>
+
+  <!-- icon -->
+  {% load static %}
+  <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- HTMX -->
+  <script src="https://unpkg.com/htmx.org@1.9.2"></script>
+
+  <!-- google ads -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2108825566151022"
+     crossorigin="anonymous"></script>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9SG7VE6QSK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-9SG7VE6QSK');
+  </script>
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+    --accent-yellow: #FBBF24;
+    --accent-green: #10B981;
+    --accent-red: #EF4444;
+    --bg-light: #F3F4F6;
+    --glass-bg: rgba(255, 255, 255, 0.3);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.15);
+    --shadow-hover: 0 6px 30px rgba(0, 0, 0, 0.2);
+    --border-radius: 12px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg-light);
+    color: #1F2937;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  main {
+    flex: 1 0 auto;
+    padding: 2rem 0;
+  }
+
+  /* Navbar */
+  .navbar {
+    background: var(--primary-gradient);
+    padding: 0.5rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .navbar-brand {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: #fff !important;
+    transition: color 0.3s;
+  }
+
+  .navbar-brand:hover {
+    color: rgba(255, 255, 255, 0.95) !important;
+  }
+
+  .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.9) !important;
+    font-weight: 500;
+    margin: 0 0.75rem;
+    margin-top: 0.3rem;
+    transition: color 0.3s;
+  }
+
+  .navbar-nav .nav-link:hover {
+    color: #fff !important;
+  }
+
+  .navbar-toggler {
+    border: none;
+  }
+
+  .navbar-toggler:focus,
+  .navbar-toggler:active {
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    outline: none;
+  }
+
+  .navbar-toggler-icon {
+    filter: invert(1);
+  }
+
+  /* Buttons */
+  .btn-primary,
+  .btn-outline-primary,
+  .btn-accent-yellow {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--border-radius);
+    transition: transform 0.2s, box-shadow 0.2s, background 0.3s, color 0.3s;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .btn-primary {
+    background: var(--accent-yellow);
+    color: #1F2937;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: #F59E0B;
+    color: #1F2937;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .btn-outline-primary {
+    border: 2px solid #4F46E5;
+    color: #4F46E5;
+    background: transparent;
+  }
+
+  .btn-outline-primary:hover {
+    background: #4F46E5;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .btn-accent-yellow {
+    background: var(--accent-yellow);
+    color: #1F2937;
+    border: none;
+  }
+
+  .btn-accent-yellow:hover {
+    background: #F59E0B;
+    color: #1F2937;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Navbar Buttons Specifics */
+  .navbar .btn-outline-primary {
+    border-color: #fff;
+    color: #fff;
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .navbar .btn-outline-primary:hover {
+    background: #fff;
+    color: #4F46E5;
+  }
+
+  .navbar .d-flex .btn {
+    min-width: 80px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-soft);
+    transition: margin-top 0.3s, box-shadow 0.3s;
+    position: relative;
+    overflow: hidden;
+    opacity: 1 !important;
+    visibility: visible !important;
+    will-change: margin-top, box-shadow;
+  }
+
+  @supports not (backdrop-filter: blur(10px)) {
+    .card {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .card:hover {
+    margin-top: -5px;
+    box-shadow: var(--shadow-hover);
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+
+  /* Hero & Guest */
+  .hero-section,
+  .guest-section {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  /* Alerts */
+  .alert {
+    border-radius: var(--border-radius);
+    margin-bottom: 1.5rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--accent-green);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--accent-red);
+    border-color: rgba(239, 68, 68, 0.3);
+  }
+
+  /* HTMX */
+  .htmx-indicator {
+    display: none;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .htmx-request .htmx-indicator {
+    display: block;
+  }
+
+  /* Footer */
+  .footer {
+    background: #1F2937;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 2rem 0;
+    flex-shrink: 0;
+  }
+
+  .footer a {
+    color: rgba(255, 255, 255, 0.9);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .footer a:hover {
+    color: #fff;
+  }
+
+  .welcome-message {
+    white-space: nowrap;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .navbar-nav .nav-link {
+      margin: 0.5rem 0;
+    }
+
+    .btn-primary,
+    .btn-outline-primary,
+    .btn-accent-yellow {
+      width: 100%;
+    }
+
+    .navbar .btn-primary,
+    .navbar .btn-outline-primary {
+      width: 100%;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+
+    .welcome-message {
+      display: none;
+    }
+  }
+</style>
+
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container-fluid d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="{% url 'home' %}"><i class="fa fa-book me-2"></i>Pro Prelims</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'quiz_search_page' %}">Browse Quizzes</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'quiz_search_page' %}?quiz_type=advance">Sectional Tests</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'quiz_search_page' %}?quiz_type=super">Mock Tests</a>
+          </li>
+          {% if user.is_authenticated %}
+            <li class="nav-item">
+              <a class="nav-link ml-0" href="{% url 'user_profile' %}">My Attempts</a>
+            </li>
+          {% endif %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'blog_list' %}">Blog</a>
+          </li>
+        </ul>
+        <div class="d-flex align-items-center">
+          {% if user.is_authenticated %}
+            <span class="text-white me-3 welcome-message">Welcome, {{ user.username|default:user.email|truncatechars:20 }}!</span>
+            <a href="{% url 'account_logout' %}" class="btn btn-outline-primary btn-sm px-3 py-2">Logout</a>
+          {% else %}
+            <a href="{% url 'account_login' %}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+            <a href="{% url 'account_signup' %}" class="btn btn-outline-primary btn-sm px-3 py-2" style="background: #FBBF24; color: #1F2937; border-color:#FBBF24;">Sign Up</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Messages -->
+  <main class="container">
+    {% if messages %}
+      <div class="mt-4">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+
+<!-- Footer -->
+{% include 'quiz/partials/footer.html' %}
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /account/
+Disallow: /accept-terms/
+Disallow: /profile/
+Disallow: /quiz/*/start/
+Disallow: /quiz/*/submit/
+
+Allow: /
+
+Sitemap: https://proprelims.com/sitemap.xml

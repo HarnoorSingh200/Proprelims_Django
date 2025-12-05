@@ -1,0 +1,78 @@
+{% load quiz_extras %}
+<div id="question-content">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>{{ quiz.quiz_name }} - Your Results</h2>
+    {% if user.is_authenticated %}
+      <div class="text-muted">
+        <small>Results for {{ user.username|default:user.email }}</small>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body text-center">
+          <h3 class="card-title">Your Score</h3>
+          <h1 class="display-4 {% if percentage >= 70 %}text-success{% elif percentage >= 50 %}text-warning{% else %}text-danger{% endif %}">
+            {{ score }}/{{ total }}
+          </h1>
+          <p class="card-text">{{ percentage }}%</p>
+          {% if percentage >= 70 %}
+            <span class="badge bg-success fs-6">Excellent!</span>
+          {% elif percentage >= 50 %}
+            <span class="badge bg-warning fs-6">Good effort!</span>
+          {% else %}
+            <span class="badge bg-danger fs-6">Keep practicing!</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="mb-3">Question Review</h3>
+  {% for result in results %}
+    <div class="card mb-3">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-start">
+          <h6 class="mb-0">Question {{ forloop.counter }}</h6>
+          {% if result.is_correct %}
+            <span class="badge bg-success">Correct</span>
+          {% else %}
+            <span class="badge bg-danger">Incorrect</span>
+          {% endif %}
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="card-text"><strong>{{ result.question }}</strong></p>
+        
+        <div class="row">
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Your answer:</strong></p>
+            <p class="text-{{ result.is_correct|yesno:'success,danger' }}">
+              {{ result.your_answer }}. {{ result.options|dict_get:result.your_answer }}
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Correct answer:</strong></p>
+            <p class="text-success">
+              {{ result.correct_answer }}. {{ result.options|dict_get:result.correct_answer }}
+            </p>
+          </div>
+        </div>
+        
+        {% if result.explanation %}
+          <div class="mt-3">
+            <p class="mb-1"><strong>Explanation:</strong></p>
+            <p class="text-muted">{{ result.explanation }}</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+
+  <div class="d-flex gap-2 mt-4">
+    <a href="{% url 'home' %}" class="btn btn-secondary">Back to Home</a>
+    <a href="{% url 'quiz_paginated' quiz.quiz_id %}" class="btn btn-primary">Retake Quiz</a>
+  </div>
+</div>

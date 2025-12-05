@@ -1,0 +1,33 @@
+<div id="question-content">
+  <h3 class="mb-4">{{ quiz.quiz_name }} - Question {{ index|add:1 }} of {{ total }}</h3>
+
+  <form
+    hx-post="{% url 'question' quiz_id=quiz.quiz_id question_index=index %}"
+    hx-target="#question-content"
+    hx-swap="outerHTML"
+    method="POST"
+  >
+    {% csrf_token %}
+    <div class="mb-4">
+      <p class="lead">{{ question.question }}</p>
+      {% for key, option in question.options.items %}
+        <div class="form-check">
+          <input
+            class="form-check-input"
+            type="radio"
+            name="answer"
+            id="option{{ key }}"
+            value="{{ key }}"
+            required
+          >
+          <label class="form-check-label" for="option{{ key }}">
+            {{ key }}. {{ option }}
+          </label>
+        </div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+

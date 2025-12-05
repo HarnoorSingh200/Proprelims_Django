@@ -1,0 +1,679 @@
+{% extends 'quiz/base.html' %}
+
+{% block title %}Home - Pro Prelims{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --section-spacing: 3rem;
+    --card-padding: 1.5rem;
+    --button-gap: 1rem;
+    --shadow-soft: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 15px rgba(0, 0, 0, 0.15);
+  }
+  .section {
+    margin-bottom: var(--section-spacing);
+  }
+  .card {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: margin-top 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-soft);
+  }
+  .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--card-padding);
+  }
+  .card-title {
+    min-height: 3rem;
+  }
+  .btn-group-centered {
+    display: flex;
+    justify-content: center;
+    gap: var(--button-gap);
+    flex-wrap: wrap;
+  }
+  .hero-section, .guest-section {
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+  .how-it-works .card {
+    align-items: center;
+    justify-content: center;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
+  }
+  .quiz-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0.75rem;
+    background: #fff;
+  }
+  .quiz-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  .quiz-card .card-title {
+    font-size: 1.1rem;
+    min-height: 3rem;
+  }
+  .quiz-card .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+  }
+  .quiz-card, .blog-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 0.75rem;
+    background: #fff;
+  }
+  .quiz-card:hover, .blog-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  .quiz-card .card-title, .blog-card .card-title {
+    font-size: 1.1rem;
+    min-height: 3rem;
+  }
+  .quiz-card .badge, .blog-card .badge {
+    font-size: 0.75rem;
+    padding: 0.35em 0.6em;
+  }
+  .blog-content-preview {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  @media (max-width: 576px) {
+  .hero-section h1 {
+    font-size: 2rem;
+  }
+  .hero-section p {
+    font-size: 1rem;
+  }
+  .btn-lg {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+  }
+  .quiz-card .card-body, .blog-card .card-body {
+    padding: 1rem;
+  }
+  .quiz-card .card-title, .blog-card .card-title {
+    min-height: 2rem;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .quiz-card .mb-3, .blog-card .mb-3 {
+    margin-bottom: 0.5rem !important;
+  }
+  .quiz-card .mt-auto, .blog-card .mt-auto {
+    margin-top: 0.5rem !important;
+  }
+
+  /* Center section titles on mobile - FIXED */
+  .section-title {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center;
+  }
+
+  .section-title h2 {
+    text-align: center;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Hide desktop View All buttons on mobile */
+  .btn-desktop-view-all {
+    display: none;
+  }
+  /* Show mobile View All buttons */
+  .btn-mobile-view-all {
+    display: block;
+    margin: 1rem auto;
+    text-align: center;
+    padding: 0.5rem;
+  }
+}
+  @media (min-width: 577px) {
+    /* Hide mobile View All buttons on desktop */
+    .btn-mobile-view-all {
+      display: none;
+    }
+    /* Ensure desktop View All buttons are visible */
+    .btn-desktop-view-all {
+      display: inline-block;
+    }
+  }
+
+  .faq-section {
+    padding: var(--section-spacing) 0;
+  }
+
+  .accordion-item {
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    background: var(--glass-bg);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .accordion-button {
+    background: var(--primary-gradient) !important;
+    color: white !important;
+    border-radius: var(--border-radius) !important;
+    font-weight: 500;
+    padding: 1rem 1.5rem;
+  }
+
+  .accordion-button:not(.collapsed) {
+    background: var(--primary-gradient) !important;
+    color: white !important;
+    box-shadow: none;
+  }
+
+  .accordion-button::after {
+    filter: brightness(0) invert(1); /* White icon for collapse/expand */
+  }
+
+  .accordion-body {
+    background: #fff;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    padding: 1.5rem;
+    font-size: 0.95rem;
+    color: #333;
+  }
+
+  .accordion-button:focus {
+    box-shadow: none;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  @media (max-width: 576px) {
+    .faq-section {
+      padding: 1.5rem 0;
+    }
+
+    .accordion-button {
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem;
+    }
+
+    .accordion-body {
+      font-size: 0.85rem;
+      padding: 1rem;
+    }
+
+    .section-title {
+      flex-direction: column !important;
+      align-items: center !important;
+      text-align: center;
+    }
+
+    .section-title h2 {
+      font-size: 1.5rem;
+    }
+  }
+</style>
+
+<!-- Hero Section -->
+<div class="card mb-5 hero-section section" style="background: var(--primary-gradient); color: #FFFFFF;">
+  <div class="card-body text-center py-5">
+    <h1 class="display-4 fw-bold mb-3">Ace UPSC & SSC with Pro Prelims</h1>
+    <p class="lead mb-4 fs-4">Practice high-quality MCQs, track your progress with powerful analytics, and prepare smarter — all without ads, hidden fees, or course selling.</p>
+    <div class="btn-group-centered">
+      <a href="{% url 'quiz_search_page' %}" class="btn btn-accent-yellow btn-lg">Explore Quizzes</a>
+    </div>
+  </div>
+</div>
+
+<!-- Latest Quizzes -->
+<div class="section">
+  <div class="d-flex justify-content-between align-items-center mb-4 section-title">
+    <h2 class="fw-bold mb-0">
+      <i class="fa fa-lightbulb me-2" style="color: var(--accent-yellow);"></i> Foundational Quizzes
+    </h2>
+    <a href="{% url 'quiz_search_page' %}" class="btn btn-outline-primary btn-sm btn-desktop-view-all">View All</a>
+  </div>
+  <div class="row">
+    {% for quiz in quizzes %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card quiz-card h-100 border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <!-- Title -->
+            <h5 class="card-title fw-semibold text-black mb-2">{{ quiz.quiz_name }}</h5>
+            <!-- Question count -->
+            <p class="small text-muted mb-2">
+              {{ quiz.question_count }} Questions | {{ quiz.question_count }} min
+            </p>
+            <!-- Tags -->
+            <div class="mb-3">
+              {% for tag in quiz.exam_tags %}
+                <span class="badge bg-light text-dark border me-1 mb-1">{{ tag }}</span>
+              {% endfor %}
+              {% if quiz.has_attempted %}
+                <span class="badge bg-success ms-2"><i class="fas fa-check"></i></span>
+              {% endif %}
+            </div>
+            <!-- Action Button -->
+            <div class="mt-auto">
+              {% if quiz.requires_signup %}
+                {% if user.is_authenticated %}
+                  <a href="{% url 'quiz_paginated' quiz.quiz_id %}" class="btn btn-primary w-100">Start Quiz</a>
+                {% else %}
+                  <a href="{% url 'account_login' %}" class="btn btn-outline-primary w-100">Login to Start</a>
+                {% endif %}
+              {% else %}
+                <a href="{% url 'quiz_paginated' quiz.quiz_id %}" class="btn btn-primary w-100">Start Quiz</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning text-center">No quizzes available yet.</div>
+      </div>
+    {% endfor %}
+  </div>
+  <!-- Mobile-only View All button -->
+  <div class="text-center">
+    <a href="{% url 'quiz_search_page' %}" class="btn btn-outline-primary btn-mobile-view-all mt-0" style="width:60%">View All</a>
+  </div>
+</div>
+
+<!-- advance Quizzes Section -->
+<div class="section">
+  <div class="d-flex justify-content-between align-items-center mb-4 section-title">
+    <h2 class="fw-bold mb-0">
+      <i class="fa fa-layer-group me-2" style="color: var(--accent-yellow);"></i> Sectional Tests
+<!--        <span style="font-size:1rem; font-weight:500"> Prepare for exams section by section</span>-->
+    </h2>
+    <a href="{% url 'quiz_search_page' %}?quiz_type=advance" class="btn btn-outline-primary btn-sm btn-desktop-view-all">View All</a>
+  </div>
+  <div class="row">
+    {% for quiz in advance_quizzes %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card quiz-card h-100 border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <!-- Title -->
+            <h5 class="card-title fw-semibold text-black mb-2">{{ quiz.quiz_name }}</h5>
+            <!-- Question count -->
+            <p class="small text-muted mb-2">
+              {{ quiz.question_count }} Questions | {{ quiz.question_count }} min
+            </p>
+            <!-- Tags -->
+            <div class="mb-3">
+              {% for tag in quiz.exam_tags %}
+                <span class="badge bg-light text-dark border me-1 mb-1">{{ tag }}</span>
+              {% endfor %}
+              {% if quiz.has_attempted %}
+                <span class="badge bg-success ms-2"><i class="fas fa-check"></i></span>
+              {% endif %}
+            </div>
+            <!-- Action Button -->
+            <div class="mt-auto">
+              {% if quiz.requires_signup %}
+                {% if user.is_authenticated %}
+                  <a href="{% url 'advance_quiz_paginated' quiz.quiz_id %}" class="btn btn-primary w-100">Start Advanced Quiz</a>
+                {% else %}
+                  <a href="{% url 'account_login' %}" class="btn btn-outline-primary w-100">Login to Start</a>
+                {% endif %}
+              {% else %}
+                <a href="{% url 'advance_quiz_paginated' quiz.quiz_id %}" class="btn btn-primary w-100">Start Advanced Quiz</a>
+              {% endif %}
+
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning text-center">No quizzes available yet.</div>
+      </div>
+    {% endfor %}
+  </div>
+  <!-- Mobile-only View All button -->
+  <div class="text-center">
+    <a href="{% url 'quiz_search_page' %}?quiz_type=advance" class="btn btn-outline-primary btn-mobile-view-all mt-0" style="width:60%">View All</a>
+  </div>
+</div>
+
+<!-- Super Quizzes Section -->
+<div class="section">
+  <div class="d-flex justify-content-between align-items-center mb-4 section-title">
+    <h2 class="fw-bold mb-0">
+      <i class="fa fa-trophy me-2" style="color: var(--accent-yellow);"></i> Mock Tests
+    </h2>
+    <a href="{% url 'quiz_search_page' %}?quiz_type=super" class="btn btn-outline-primary btn-sm btn-desktop-view-all">View All</a>
+  </div>
+  <div class="row">
+    {% for quiz in super_quizzes %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card quiz-card h-100 border-0 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <!-- Title -->
+            <h5 class="card-title fw-semibold text-black mb-2">{{ quiz.quiz_name }}</h5>
+            <!-- Question count -->
+            <p class="small text-muted mb-2">
+              {{ quiz.total_questions }} Questions | 60 min
+            </p>
+            <!-- Tags -->
+            <div class="mb-3">
+              {% for tag in quiz.exam_tags %}
+                <span class="badge bg-light text-dark border me-1 mb-1">{{ tag }}</span>
+              {% endfor %}
+              {% if quiz.has_attempted %}
+                <span class="badge bg-success ms-2"><i class="fas fa-check"></i></span>
+              {% endif %}
+            </div>
+            <!-- Action Button -->
+            <div class="mt-auto">
+              {% if quiz.requires_signup %}
+                {% if user.is_authenticated %}
+                  <a href="{% url 'super_quiz_detail' quiz.quiz_id %}" class="btn btn-primary w-100">Start Mock Test</a>
+                {% else %}
+                  <a href="{% url 'account_login' %}" class="btn btn-outline-primary w-100">Login to Start</a>
+                {% endif %}
+              {% else %}
+                <a href="{% url 'super_quiz_detail' quiz.quiz_id %}" class="btn btn-primary w-100">Start Mock Test</a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning text-center">No quizzes available yet.</div>
+      </div>
+    {% endfor %}
+  </div>
+  <!-- Mobile-only View All button -->
+  <div class="text-center">
+    <a href="{% url 'quiz_search_page' %}?quiz_type=super" class="btn btn-outline-primary btn-mobile-view-all mt-0" style="width:60%">View All</a>
+  </div>
+</div>
+
+<!-- Blog Posts Section -->
+<div class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4 section-title">
+    <h2 class="mb-0 fw-bold ">
+      <i class="fa fa-pen me-2" style="color: var(--accent-yellow);"></i> Blog Posts
+    </h2>
+    <a href="{% url 'blog_list' %}" class="btn btn-outline-primary btn-sm btn-desktop-view-all">View All</a>
+  </div>
+  <div class="row">
+    {% for post in blog_posts %}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card blog-card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <!-- Title with fixed height -->
+            <h5 class="card-title fw-semibold text-black">
+              {{ post.title|truncatewords:10 }}
+            </h5>
+            <!-- Like count with fixed height -->
+            <p class="small text-muted">
+              <i class="fa fa-heart me-2"></i>{{ post.like_count }} Likes
+            </p>
+            <!-- Content preview with fixed height -->
+            <p class="blog-content-preview text-muted small">
+              {% load quiz_extras %}
+              {{ post.content|strip_markdown|truncatewords:25 }}
+            </p>
+            <!-- Button pushed to bottom -->
+            <div class="mt-auto">
+              <a href="{% url 'blog_detail' post.post_id %}" class="btn btn-primary btn-sm w-100">Read More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-warning text-center">No blog posts available.</div>
+      </div>
+    {% endfor %}
+  </div>
+  <!-- Mobile-only View All button -->
+  <div class="text-center">
+    <a href="{% url 'blog_list' %}" class="btn btn-outline-primary btn-mobile-view-all mb-3  mt-0" style="width:60%">View All Posts</a>
+  </div>
+</div>
+
+<!-- How It Works -->
+<div class="section">
+  <div class="d-flex justify-content-between align-items-center mb-4 section-title">
+    <h2 class="mb-0 fw-bold text-center"><i class="fa fa-lightbulb me-2" style="color: var(--accent-yellow);"></i> How It Works</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      <div class="card h-100 p-3 border-0 how-it-works">
+        <div class="card-body text-center">
+          <i class="fa fa-user-plus fa-2x text-accent-yellow mb-3"></i>
+          <h5 class="fw-bold mb-2">1. Sign Up</h5>
+          <p class="text-muted">Create your free account or sign in with Google in seconds.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card h-100 p-3 border-0 how-it-works">
+        <div class="card-body text-center">
+          <i class="fa fa-book-open fa-2x text-accent-yellow mb-3"></i>
+          <h5 class="fw-bold mb-2">2. Take Quizzes</h5>
+          <p class="text-muted">Choose from a wide range of quizzes categorized by topics and difficulty.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4 mb-3">
+      <div class="card h-100 p-3 border-0 how-it-works">
+        <div class="card-body text-center">
+          <i class="fa fa-trophy fa-2x text-accent-yellow mb-3"></i>
+          <h5 class="fw-bold mb-2">3. Review & Improve</h5>
+          <p class="text-muted">Analyze your results, learn from explanations, and level up your prep.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% load static %}
+<section class="faq-section section">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4 section-title">
+      <h2 class="mb-0 fw-bold text-center">
+        <i class="fa fa-question-circle me-2" style="color: var(--accent-yellow);"></i> Frequently Asked Questions
+      </h2>
+    </div>
+    <div class="accordion">
+      <!-- FAQ 1 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-1" aria-expanded="true">
+            Is ProPrelims.com completely free?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse show faq-collapse-1" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            Yes! Pro Prelims is 100% free to use. You can access all quizzes, mock tests, and analytics without paying anything.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 2 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-2" aria-expanded="false">
+            Are there any ads or hidden charges?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-2" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            No. We do not show ads, ask for subscriptions, or hide features behind paywalls. The platform is built to help aspirants without distractions.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 3 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-3" aria-expanded="false">
+            Do you sell courses or coaching?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-3" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            No. We focus only on providing high-quality MCQs, quizzes, and insights. We do not sell courses or tie up with coaching institutes for promotions.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 3.1 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-9" aria-expanded="false">
+            What is the difference between Foundational Tests, Sectional Tests, and Mock Tests?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-9" data-bs-parent=".accordion">
+          <div class="accordion-body">
+          <strong>Foundational Tests</strong>:
+          These are basic level quizzes designed to strengthen your core concepts and fundamentals. They are ideal for beginners or for revising individual topics.
+          <br>
+          <strong>Sectional Tests</strong>:
+          These focus on specific sections (e.g., English, Quant and Reasoning) and help you master one section at a time. They simulate real exam patterns within that section.
+          <br>
+          <strong>Mock Tests</strong>:
+          These are full-length tests that replicate the actual UPSC/SSC exam environment. They combine all subjects and are great for testing your overall preparation and time management skills.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 3.2 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-10" aria-expanded="false">
+            Do you provide solutions and explanations for questions?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-10" data-bs-parent=".accordion">
+          <div class="accordion-body">
+          Yes! All questions include detailed explanations to help you understand concepts rather than just memorizing answers. They are available at result page after you submit the test and in your profile.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 4 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-4" aria-expanded="false">
+            What exams do you cover?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-4" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            Currently, we offer quizzes and mock tests for UPSC CSE (Prelims) and SSC exams. We plan to expand to more competitive exams soon.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 5 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-5" aria-expanded="false">
+            How are the questions generated?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-5" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            Our questions are a mix of AI-generated(Multi AI Framework) and expert-reviewed content. They are regularly updated to match the latest exam patterns.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 6 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-6" aria-expanded="false">
+            Do I need to create an account to take quizzes?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-6" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            You can try some quizzes without signing up, but creating an account unlocks full features like progress tracking and personalized analytics.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 7 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-7" aria-expanded="false">
+            How often do you update the question bank?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-7" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            We update our quizzes and mock tests regularly, keeping them aligned with current affairs and recent exam trends.
+          </div>
+        </div>
+      </div>
+      <!-- FAQ 8 -->
+      <div class="accordion-item shadow-sm">
+        <h2 class="accordion-header">
+          <button class="accordion-button collapsed bg-primary-gradient text-white" type="button" data-bs-toggle="collapse" data-bs-target=".faq-collapse-8" aria-expanded="false">
+            Can coaching centers use your content?
+          </button>
+        </h2>
+        <div class="accordion-collapse collapse faq-collapse-8" data-bs-parent=".accordion">
+          <div class="accordion-body">
+            Yes! We also provide B2B solutions like bulk question sets and white-label tests for coaching centers. Interested institutes can <a href="{% url 'contact_page' %}">Contact Us</a> for details.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials-->
+<div class="section">
+  <h2 class="mb-5 mt-2 fw-bold text-center"><i class="fa fa-users me-2" style="color: var(--accent-yellow);"></i>What Students Say</h2>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="mb-3"><i class="fa fa-quote-left me-2 text-primary"></i>Pro Prelims helped me identify my weak spots and improve quickly. I now practice every day!</p>
+          <div class="fw-bold text-end">— Aditi Sharma, UPSC Aspirant</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <p class="mb-3"><i class="fa fa-quote-left me-2 text-primary"></i>The explanations and tracking features make this the best quiz app I've used!</p>
+          <div class="fw-bold text-end">— Rohan Verma, SSC CGL Candidate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA for Guests -->
+{% if not user.is_authenticated %}
+  <div class="card mb-5 guest-section section" style="background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 0.75rem;">
+    <div class="card-body text-center py-5">
+      <h3 class="fw-bold mb-3">Join Pro Prelims Today</h3>
+      <p class="lead mb-4">Sign up to track your progress, save attempts, and unlock free premium features.</p>
+      <div class="btn-group-centered">
+        <a href="{% url 'account_signup' %}" class="btn btn-accent-yellow btn-lg">Sign Up Free</a>
+        <a href="{% url 'account_login' %}" class="btn btn-outline-primary btn-lg">Sign In</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Simplified Debug Script -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const elements = document.querySelectorAll('.hero-section, .guest-section, .card');
+    elements.forEach(el => {
+      el.style.display = 'block';
+      el.style.opacity = '1';
+      el.style.visibility = 'visible';
+    });
+  });
+</script>
+{% endblock %}

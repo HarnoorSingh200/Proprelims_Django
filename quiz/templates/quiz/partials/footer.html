@@ -1,0 +1,149 @@
+{% load static %}
+<footer class="py-4 mt-5">
+  <div class="container">
+
+    <!-- Brand Section -->
+    <div class="text-center mb-4">
+      <h4 class="mb-3 fw-bold">Pro Prelims</h4>
+      <p class="text-muted mx-auto" style="max-width: 600px;">
+        Your trusted platform for UPSC, SSC, and other competitive exams — powered by AI-generated questions, insights, and blogs to boost your preparation.
+      </p>
+    </div>
+
+    <!-- Navigation Links -->
+    <div class="text-center mb-4">
+      <div class="d-flex flex-wrap justify-content-center gap-3 mb-3">
+        <a href="{% url 'quiz_search_page' %}?quiz_type=quiz" class="nav-link">Foundational Tests</a>
+        <span class="text-muted">•</span>
+        <a href="{% url 'quiz_search_page' %}?quiz_type=advance" class="nav-link">Sectional Tests</a>
+        <span class="text-muted">•</span>
+        <a href="{% url 'quiz_search_page' %}?quiz_type=super" class="nav-link">Full Scale Mock Tests</a>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-center gap-3">
+        <a href="{% url 'privacy_policy' %}" class="nav-link">Privacy Policy</a>
+        <span class="text-muted">•</span>
+        <a href="{% url 'terms_of_service' %}" class="nav-link">Terms of Service</a>
+        <span class="text-muted">•</span>
+        <a href="{% url 'contact_page' %}" class="nav-link">Contact Us</a>
+      </div>
+    </div>
+
+    <!-- Social Media Links -->
+    <div class="text-center mb-4">
+      <div class="d-flex justify-content-center gap-4">
+        <a href="https://x.com/ProPrelims" class="social-link" aria-label="Twitter">
+          <i class="fab fa-twitter fa-lg"></i>
+        </a>
+        <a href="https://www.linkedin.com/company/pro-prelims/" class="social-link" aria-label="LinkedIn">
+          <i class="fab fa-linkedin fa-lg"></i>
+        </a>
+        <a href="https://www.youtube.com/@ProPrelims/shorts" class="social-link" aria-label="YouTube">
+          <i class="fab fa-youtube fa-lg"></i>
+        </a>
+        <a href="https://www.instagram.com/proprelims" class="social-link" aria-label="Instagram">
+          <i class="fab fa-instagram fa-lg"></i>
+        </a>
+      </div>
+    </div>
+
+
+    <!-- Disclosure -->
+    <div class="text-center mb-4">
+      <p class="text-muted small mx-auto" style="max-width: 600px;">
+<!--        <strong>Disclosure:</strong> We never show ads, sell courses, or put content behind paywalls but Some links on ProPrelims.com may be Amazon affiliate links. As an Amazon Associate, we earn from qualifying purchases at no additional cost to you.-->
+      </p>
+    </div>
+
+    <!-- Copyright -->
+    <hr class="border-light my-4">
+    <div class="text-center">
+      <p class="mb-0 small text-muted">
+        © {% now "Y" %} ProPrelims. All rights reserved.
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  footer {
+    background: #1F2937;
+    color: rgba(255, 255, 255, 0.8);
+    padding: 2rem 0;
+    flex-shrink: 0;
+  }
+
+  footer h4 {
+    color: #ffffff;
+    font-size: 1.8rem;
+  }
+
+  footer .nav-link {
+    color: #a0a0a0;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+  }
+
+  footer .nav-link:hover {
+    color: #4F46E5;
+    text-decoration: underline;
+  }
+
+  footer .social-link {
+    color: #a0a0a0;
+    text-decoration: none;
+    transition: color 0.3s ease, transform 0.2s ease;
+  }
+
+  footer .social-link:hover {
+    color: #4F46E5;
+    transform: translateY(-2px);
+  }
+
+  footer .text-muted {
+    color: #a0a0a0 !important;
+  }
+
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    footer .container {
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    footer h4 {
+      font-size: 1.5rem;
+    }
+
+    footer .nav-link {
+      font-size: 0.9rem;
+    }
+
+    footer .d-flex.gap-3 {
+      gap: 0.5rem !important;
+    }
+
+    footer .social-link {
+      font-size: 1.2rem;
+    }
+  }
+
+  @media (max-width: 576px) {
+    footer .d-flex.flex-wrap {
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem !important;
+    }
+
+    footer .d-flex.flex-wrap span {
+      display: none;
+    }
+
+    footer .nav-link {
+      display: block;
+      padding: 0.25rem 0;
+    }
+  }
+</style>

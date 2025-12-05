@@ -1,0 +1,416 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Super Quiz Solutions - {{ quiz.quiz_name }} - Pro Prelims{% endblock %}
+
+{% block content %}
+<style>
+  /* Reuse styles from solutions.html */
+  :root {
+    --border-radius: 8px;
+    --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+  }
+
+  .question-container {
+    border: 1px solid #dee2e6;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    background: #fff;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .question-header {
+    padding: 0.75rem 1rem;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    gap: 0.5rem;
+  }
+
+  .question-header-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .question-text {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin: 0;
+    word-wrap: break-word;
+  }
+
+  .question-body {
+    padding: 1rem;
+    background: #fff;
+  }
+
+  .option-list {
+    margin: 0;
+    padding: 0;
+  }
+
+  .option-item {
+    border: none;
+    border-radius: 6px;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+    word-wrap: break-word;
+  }
+
+  .option-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .option-text {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .option-badge {
+    flex-shrink: 0;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+  }
+
+  .toggle-icon {
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .toggle-icon[aria-expanded="true"] {
+    transform: rotate(180deg);
+  }
+
+  .explanation-box {
+    background: #e7f3ff;
+    border: 1px solid #b3d9ff;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+
+  .action-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: 0.75rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  /* Tabs styling */
+  .nav-tabs .nav-link {
+    border: 1px solid #dee2e6;
+    border-top-left-radius: var(--border-radius);
+    border-top-right-radius: var(--border-radius);
+    margin-bottom: 0;
+    color: #495057;
+    background: #f8f9fa;
+    transition: all 0.2s;
+  }
+
+  .nav-tabs .nav-link.active {
+    background: #fff;
+    border-bottom: 1px solid transparent;
+    color: #4F46E5;
+    font-weight: 600;
+  }
+
+  .tab-content {
+    border: 1px solid #dee2e6;
+    border-top: none;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    padding: 1rem 0;
+    background: #fff;
+  }
+
+  @media (max-width: 576px) {
+    .container {
+      padding-left: 0rem;
+      padding-right: 0rem;
+    }
+
+    .question-header {
+      padding: 0.75rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .question-text {
+      font-size: 0.9rem;
+    }
+
+    .question-body {
+      padding: 0.75rem;
+    }
+
+    .option-item {
+      padding: 0.6rem;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .option-text {
+      font-size: 0.85rem;
+    }
+
+    .option-badge {
+      align-self: flex-end;
+      font-size: 0.7rem;
+    }
+
+    .explanation-box {
+      padding: 0.6rem;
+      font-size: 0.85rem;
+    }
+
+    .action-buttons {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      min-width: auto;
+      padding: 0.75rem;
+    }
+  }
+
+  /* Recommended Books Styling */
+  .recommended-books {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background: #f8f9fa;
+  }
+
+  .recommended-books h6 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .book-card {
+    transition: transform 0.2s ease;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    height: 100%; /* Ensure cards stretch to fill container */
+  }
+
+  .book-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .book-card .card-body {
+    padding: 0.75rem;
+    min-height: 100px; /* Fixed minimum height for uniformity */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .book-card h6 {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit title to 2 lines */
+    -webkit-box-orient: vertical;
+  }
+
+  .book-card a {
+    text-decoration: none;
+    color: #4F46E5;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .book-card a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 575.98px) {
+    .recommended-books {
+      padding: 0.5rem;
+    }
+
+    .book-card {
+      margin-bottom: 0.75rem;
+    }
+
+    .book-card .card-body {
+      min-height: 80px; /* Slightly smaller on mobile for compactness */
+    }
+  }
+
+</style>
+
+<div class="container-fluid">
+  <div class="card shadow-sm">
+    <div class="card-header" style="background: var(--primary-gradient); color: white;">
+      <h4 class="mb-1 mt-1 d-flex align-items-center">
+        <i class="fa fa-book-open me-2"></i>
+        <span class="d-none d-sm-inline">Solutions for {{ quiz.quiz_name }}</span>
+        <span class="d-sm-none">Solutions</span>
+      </h4>
+    </div>
+
+    <div class="card-body">
+      <!-- Stats Section -->
+      <div class="stats-container mb-4">
+        <div class="stats-box">
+          <h5>Total Questions</h5>
+          <p class="stats-value text-primary">{{ quiz.total_questions }}</p>
+        </div>
+      </div>
+
+      <!-- Section Tabs -->
+      <ul class="nav nav-tabs mb-3" id="sectionTabs" role="tablist">
+        {% for section in sections %}
+          <li class="nav-item" role="presentation">
+            <button class="nav-link {% if forloop.first %}active{% endif %}"
+                    id="tab-{{ section.part_number }}"
+                    data-bs-toggle="tab"
+                    data-bs-target="#section-{{ section.part_number }}"
+                    type="button"
+                    role="tab"
+                    aria-controls="section-{{ section.part_number }}"
+                    aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+              {{ section.part_name }}
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content" id="sectionTabsContent">
+        {% for section in sections %}
+          <div class="tab-pane fade {% if forloop.first %}show active{% endif %}"
+               id="section-{{ section.part_number }}"
+               role="tabpanel"
+               aria-labelledby="tab-{{ section.part_number }}">
+            <div class="questions-section">
+              {% for solution in section.solutions %}
+                <div class="question-container">
+                  <div class="question-header">
+                    <div class="d-flex w-100 justify-content-between align-items-start">
+                      <div class="question-header-content">
+                        <p class="question-text">
+                          <strong>Q{{ forloop.parentloop.counter }}.{{ forloop.counter }}.</strong>
+                          {{ solution.question }}
+                        </p>
+                      </div>
+                      <i class="fa fa-chevron-down toggle-icon cursor-pointer"
+                         role="button"
+                         data-bs-toggle="collapse"
+                         data-bs-target="#collapse{{ section.part_number }}_{{ forloop.counter }}"
+                         aria-expanded="true"
+                         aria-controls="collapse{{ section.part_number }}_{{ forloop.counter }}"></i>
+                    </div>
+                  </div>
+                  <div id="collapse{{ section.part_number }}_{{ forloop.counter }}" class="collapse show">
+                    <div class="question-body">
+                      <ul class="option-list">
+                        {% for key, option in solution.options.items %}
+                          <li class="option-item
+                            {% if key == solution.correct_answer %}bg-success bg-opacity-25 border-success{% endif %}">
+                            <span class="option-text">
+                              <strong>{{ key }}.</strong> {{ option }}
+                            </span>
+                            {% if key == solution.correct_answer %}
+                              <span class="option-badge bg-success text-white">Correct</span>
+                            {% endif %}
+                          </li>
+                        {% endfor %}
+                      </ul>
+                      {% if solution.explanation %}
+                        <div class="explanation-box">
+                          <strong><i class="fa fa-info-circle me-1"></i>Explanation:</strong>
+                          {{ solution.explanation }}
+                        </div>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Recommended Books Section -->
+      {% if recommended_books %}
+        <div class="recommended-books">
+          <h6 class="d-flex align-items-center">
+            <i class="fa fa-book me-2"></i>Recommended Study Materials
+          </h6>
+          <div class="row g-2 g-sm-3">
+            {% for book in recommended_books %}
+              <div class="col-12 col-sm-6 col-lg-3">
+                <div class="book-card bg-light shadow-none border">
+                  <div class="card-body py-2 px-2 py-sm-3 px-sm-3">
+                    <h6 class="mb-1 small">{{ book.title }}</h6>
+                    <a href="{{ book.link }}" target="_blank" rel="noopener noreferrer" class="small" style="align">
+                      Buy on Amazon <i class="fa fa-external-link-alt ms-1"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <p class="text-muted small mt-3">
+            <strong>Disclosure:</strong> As an Amazon Associate, we earn from qualifying purchases at no extra cost to you.
+          </p>
+        </div>
+      {% endif %}
+
+      <!-- Action Buttons -->
+      <div class="action-buttons mt-4">
+        <a href="{% url 'quiz_search_page' %}" class="btn btn-outline-primary action-btn">
+          <i class="fa fa-arrow-left me-2"></i>Back to Quizzes
+        </a>
+        <a href="{% url 'super_quiz_paginated' quiz.quiz_id %}" class="btn btn-warning action-btn">
+          <i class="fa fa-play me-2"></i>Take Quiz
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const collapseElements = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    collapseElements.forEach(element => {
+      const target = document.querySelector(element.getAttribute('data-bs-target'));
+      if (target) {
+        target.addEventListener('show.bs.collapse', function() {
+          element.setAttribute('aria-expanded', 'true');
+        });
+        target.addEventListener('hide.bs.collapse', function() {
+          element.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

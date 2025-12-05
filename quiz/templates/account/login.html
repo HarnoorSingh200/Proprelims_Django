@@ -1,0 +1,74 @@
+{% extends "quiz/base.html" %}
+{% load i18n socialaccount %}
+
+{% block title %}Login - Pro Prelims{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6 col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header bg-primary text-white" style="background: var(--primary-gradient); color: white;">
+        <h3 class="mb-0" ><i class="fa fa-sign-in-alt me-2"></i>Sign In</h3>
+      </div>
+      <div class="card-body">
+        <!-- Google Login -->
+        <div class="d-grid mb-4">
+          <a href="{% provider_login_url 'google' %}" class="btn btn-light border d-flex align-items-center justify-content-center gap-2 py-2">
+            <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" width="20" height="20">
+            <span>Sign in with Google</span>
+          </a>
+        </div>
+
+        <div class="text-center mb-4">
+          <hr>
+        </div>
+
+        <!-- Form Errors -->
+        {% if form.errors or form.non_field_errors %}
+          <div class="alert alert-danger">
+            <strong>Please correct the following errors:</strong>
+            <ul class="mb-0">
+              {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+              {% endfor %}
+              {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                  <li>{{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        <!-- Login Form -->
+        <form method="POST" action="{% url 'account_login' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="id_login" class="form-label">Email</label>
+            <input type="email" name="login" class="form-control" id="id_login" placeholder="Enter your email" required
+                   value="{{ form.login.value|default:'' }}" autocomplete="email">
+          </div>
+          <div class="mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            <input type="password" name="password" class="form-control" id="id_password" placeholder="Enter your password" required
+                   autocomplete="current-password">
+          </div>
+          <div class="mb-3 form-check">
+            <input type="checkbox" name="remember" id="id_remember" class="form-check-input">
+            <label class="form-check-label" for="id_remember">Remember Me</label>
+          </div>
+          {% if redirect_field_value %}
+            <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+          {% endif %}
+          <button class="btn btn-primary w-100" type="submit">Sign In</button>
+        </form>
+
+        <div class="text-center mt-4">
+          <p><a href="{% url 'account_reset_password' %}">Forgot Password?</a></p>
+          <p>Don't have an account? <a href="{% url 'account_signup' %}">Sign Up</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

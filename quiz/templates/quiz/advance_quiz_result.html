@@ -1,0 +1,369 @@
+{% extends 'quiz/base.html' %}
+{% load i18n %}
+{% block title %}Advance Quiz Results - {{ quiz.quiz_name }} - Pro Prelims{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --primary-gradient: linear-gradient(135deg, #4F46E5, #7C3AED);
+  }
+  .bg-primary-gradient {
+    background: var(--primary-gradient) !important;
+  }
+  .toggle-icon {
+    transition: transform 0.2s ease;
+  }
+  .toggle-icon[aria-expanded="true"] {
+    transform: rotate(180deg);
+  }
+  .badge.bg-warning {
+    padding: 0.35rem 0.5rem;
+    line-height: 1.25;
+    display: inline-flex;
+    align-items: center;
+  }
+  .btn-outline-light.btn-sm {
+    padding: 0.2rem 0.5rem;
+    line-height: 1.25;
+    display: inline-flex;
+    align-items: center;
+  }
+  @media (max-width: 575.98px) {
+    main.container {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+    .px-2.px-sm-3 > .card.border {
+      border: none !important;
+    }
+    .px-2.px-sm-3 > .card {
+      background-color: transparent !important;
+    }
+  }
+
+  /* Recommended Books Styling */
+  .recommended-books {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    background: #f8f9fa;
+  }
+
+  .recommended-books h6 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+  }
+
+  .book-card {
+    transition: transform 0.2s ease;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+    height: 100%; /* Ensure cards stretch to fill container */
+  }
+
+  .book-card:hover {
+    transform: translateY(-3px);
+  }
+
+  .book-card .card-body {
+    padding: 0.75rem;
+    min-height: 100px; /* Fixed minimum height for uniformity */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .book-card h6 {
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Limit title to 2 lines */
+    -webkit-box-orient: vertical;
+  }
+
+  .book-card a {
+    text-decoration: none;
+    color: #4F46E5;
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  .book-card a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 575.98px) {
+    .recommended-books {
+      padding: 0.5rem;
+    }
+
+    .book-card {
+      margin-bottom: 0.75rem;
+    }
+
+    .book-card .card-body {
+      min-height: 80px; /* Slightly smaller on mobile for compactness */
+    }
+  }
+
+</style>
+
+<div class="px-2 px-sm-3">
+  <div class="card shadow-none border">
+    <div class="card-header bg-primary-gradient text-white py-2 py-sm-3">
+      <h4 class="mb-0 d-flex align-items-center">
+        <i class="fa fa-check-circle me-2"></i>
+        <span class="d-none d-sm-inline">Advance Quiz Results - {{ quiz.quiz_name }}</span>
+        <span class="d-sm-none">Results</span>
+      </h4>
+    </div>
+
+    <div class="card-body px-1 px-sm-3 py-2 py-sm-3">
+      <div class="row g-2 g-sm-3 mb-4">
+        <div class="col-12 col-sm-4">
+          <div class="card bg-light shadow-none border">
+            <div class="card-body text-center py-2 px-2 py-sm-3 px-sm-3">
+              <h6 class="card-title text-muted mb-1 mb-sm-2 small">Score</h6>
+              <p class="card-text h5 h4-sm text-success mb-0">{{ score }}/{{ total }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-4">
+          <div class="card bg-light shadow-none border">
+            <div class="card-body text-center py-2 px-2 py-sm-3 px-sm-3">
+              <h6 class="card-title text-muted mb-1 mb-sm-2 small">Percentage</h6>
+              <p class="card-text h5 h4-sm text-primary mb-0">{{ percentage }}%</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-sm-4">
+          <div class="card bg-light shadow-none border">
+            <div class="card-body text-center py-2 px-2 py-sm-3 px-sm-3">
+              <h6 class="card-title text-muted mb-1 mb-sm-2 small">Time Taken</h6>
+              <p class="card-text h5 h4-sm text-muted mb-0">{{ time_taken }}s</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap gap-2 justify-content-end mb-3">
+        <button class="btn btn-outline-secondary btn-sm flex-fill flex-sm-grow-0" onclick="toggleFiltered('incorrect')">
+          <i class="fa fa-times-circle me-1"></i>
+          <span class="d-none d-sm-inline">Show </span>Incorrect
+        </button>
+        <button class="btn btn-outline-secondary btn-sm flex-fill flex-sm-grow-0" onclick="toggleFiltered('skipped')">
+          <i class="fa fa-minus-circle me-1"></i>
+          <span class="d-none d-sm-inline">Show </span>Skipped
+        </button>
+        <button class="btn btn-outline-secondary btn-sm flex-fill flex-sm-grow-0 active" onclick="toggleFiltered('all')">
+          <i class="fa fa-list me-1"></i>
+          <span class="d-none d-sm-inline">Show </span>All
+        </button>
+      </div>
+
+      <div class="questions-section" id="questions-section">
+        <div id="no-results-message" class="alert alert-info text-center d-none shadow-none">
+          <i class="fa fa-info-circle me-1"></i>
+          No questions match the selected filter.
+        </div>
+        {% for result in results %}
+          <div class="card mb-2 mb-sm-3 review-card shadow-none border"
+               data-status="{% if not result.your_answer %}skipped{% elif not result.is_correct %}incorrect{% else %}correct{% endif %}">
+            <div class="card-header bg-primary-gradient text-white py-2 px-2 py-sm-3 px-sm-3">
+              <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
+                <div class="flex-grow-1 mb-2 mb-sm-0">
+                  <p class="mb-0 small text-break">
+                    <strong>Q{{ forloop.counter }}.</strong> {{ result.question }}
+                  </p>
+                </div>
+                <div class="d-flex align-items-center gap-2 gap-sm-3 align-self-end align-self-sm-center">
+                  {% if not result.your_answer %}
+                    <span class="badge bg-warning text-dark">Skipped</span>
+                  {% endif %}
+                  {% if user.is_authenticated %}
+                    <button class="btn btn-outline-light btn-sm" onclick="showReportModal({{ forloop.counter0 }})">
+                      <i class="fa fa-flag"></i>
+                    </button>
+                  {% endif %}
+                  <div class="ms-2 ms-sm-3">
+                    <i class="fa fa-chevron-down toggle-icon"
+                       style="cursor: pointer;"
+                       role="button"
+                       data-bs-toggle="collapse"
+                       data-bs-target="#collapse{{ forloop.counter }}"
+                       aria-expanded="{% if not result.is_correct or not result.your_answer %}true{% else %}false{% endif %}"
+                       aria-controls="collapse{{ forloop.counter }}"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div id="collapse{{ forloop.counter }}"
+                 class="collapse {% if not result.is_correct or not result.your_answer %}show{% endif %}">
+              <div class="card-body py-2 px-2 py-sm-3 px-sm-3">
+                <div class="list-group list-group-flush">
+                  {% for key, option in result.options.items %}
+                    <div class="list-group-item shadow-none rounded mb-2 py-2 px-2 py-sm-3 px-sm-3
+                        {% if key == result.correct_answer %}list-group-item-success{% elif key == result.your_answer and not result.is_correct %}list-group-item-danger{% else %}list-group-item-light{% endif %}">
+                      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start">
+                        <span class="text-break small flex-grow-1">
+                          <strong>{{ key }}.</strong> {{ option }}
+                        </span>
+                        <div class="d-flex gap-1 mt-1 mt-sm-0 flex-wrap">
+                          {% if key == result.correct_answer %}
+                            <span class="badge bg-success">Correct (+1)</span>
+                          {% endif %}
+                          {% if key == result.your_answer and not result.is_correct %}
+                            <span class="badge bg-danger">Your Answer</span>
+                          {% elif key == result.your_answer %}
+                            <span class="badge bg-success">Your Answer (+1)</span>
+                          {% endif %}
+                        </div>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+                {% if result.explanation %}
+                  <div class="alert alert-info mt-3 mb-1 py-2 px-2 py-sm-3 px-sm-3 shadow-none">
+                    <strong><i class="fa fa-info-circle me-1"></i>Explanation:</strong>
+                    <div class="mt-1 small">{{ result.explanation }}</div>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+
+      <div class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content shadow-none">
+            <div class="modal-header bg-primary-gradient text-white">
+              <h5 class="modal-title" id="reportModalLabel">
+                <i class="fa fa-flag me-2"></i>Report an Issue
+              </h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <textarea id="issueText" class="form-control shadow-none" rows="4" placeholder="Describe the issue with this question..."></textarea>
+              <input type="hidden" id="reportQuestionIndex">
+              <div id="feedbackMessage" class="alert mt-2 d-none shadow-none"></div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-warning" onclick="submitIssue()">Submit</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-column flex-sm-row gap-2 mt-4">
+        <a href="{% url 'quiz_search_page' %}?quiz_type=advance" class="btn btn-outline-primary flex-fill">
+          <i class="fa fa-arrow-left me-2"></i>Back to Quizzes
+        </a>
+        <a href="{% url 'advance_quiz_paginated' quiz.quiz_id %}" class="btn btn-accent-yellow flex-fill mb-0">
+          <i class="fa fa-redo me-2"></i>Retake Quiz
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showReportModal(questionIndex) {
+    document.getElementById('issueText').value = '';
+    document.getElementById('reportQuestionIndex').value = questionIndex;
+    const feedbackMessage = document.getElementById('feedbackMessage');
+    feedbackMessage.classList.add('d-none');
+    const modal = new bootstrap.Modal(document.getElementById('reportModal'));
+    modal.show();
+  }
+
+  function submitIssue() {
+    const issue = document.getElementById('issueText').value.trim();
+    const questionIndex = document.getElementById('reportQuestionIndex').value;
+    const feedbackMessage = document.getElementById('feedbackMessage');
+
+    if (!issue) {
+      feedbackMessage.className = 'alert alert-danger mt-2 shadow-none';
+      feedbackMessage.classList.remove('d-none');
+      feedbackMessage.textContent = 'Please describe the issue.';
+      return;
+    }
+
+    feedbackMessage.className = 'alert alert-info mt-2 shadow-none';
+    feedbackMessage.classList.remove('d-none');
+    feedbackMessage.textContent = 'Submitting...';
+
+    fetch("{% url 'report_issue' quiz.quiz_id %}", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        issue: issue,
+        question_index: questionIndex,
+        quiz_type: 'advance_quiz'
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      feedbackMessage.className = 'alert alert-success mt-2 shadow-none';
+      feedbackMessage.textContent = data.message || 'Issue reported successfully!';
+      setTimeout(() => {
+        bootstrap.Modal.getInstance(document.getElementById('reportModal')).hide();
+        feedbackMessage.classList.add('d-none');
+      }, 1500);
+    })
+    .catch(error => {
+      feedbackMessage.className = 'alert alert-danger mt-2 shadow-none';
+      feedbackMessage.textContent = 'Failed to submit issue. Please try again.';
+      console.error(error);
+    });
+  }
+
+  function toggleFiltered(type) {
+    const cards = document.querySelectorAll('#questions-section .review-card');
+    const buttons = document.querySelectorAll('#questions-section .btn[onclick*="toggleFiltered"]');
+    const noResultsMessage = document.getElementById('no-results-message');
+    let visibleCards = 0;
+
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.closest('button').classList.add('active');
+
+    cards.forEach(card => {
+      const status = card.dataset.status.trim();
+      if (type === 'incorrect') {
+        card.style.display = (status === 'incorrect') ? '' : 'none';
+        if (status === 'incorrect') visibleCards++;
+      } else if (type === 'skipped') {
+        card.style.display = (status === 'skipped') ? '' : 'none';
+        if (status === 'skipped') visibleCards++;
+      } else {
+        card.style.display = '';
+        visibleCards++;
+      }
+    });
+
+    noResultsMessage.classList.toggle('d-none', visibleCards !== 0);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const collapseElements = document.querySelectorAll('[data-bs-toggle="collapse"]');
+    collapseElements.forEach(element => {
+      const target = document.querySelector(element.getAttribute('data-bs-target'));
+      if (target) {
+        target.addEventListener('show.bs.collapse', function() {
+          element.setAttribute('aria-expanded', 'true');
+        });
+        target.addEventListener('hide.bs.collapse', function() {
+          element.setAttribute('aria-expanded', 'false');
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

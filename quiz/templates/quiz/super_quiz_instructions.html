@@ -1,0 +1,76 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Instructions - {{ quiz.quiz_name }} - Pro Prelims{% endblock %}
+
+{% block content %}
+<style>
+  .compact-list li {
+    margin-top: 4px;
+  }
+
+  .btn-start {
+    background-color: #FBBF24;
+    border-color: #FBBF24;
+    color: #000;
+  }
+
+  .btn-start:hover {
+    background-color: #facc15;
+    border-color: #facc15;
+    color: #000;
+  }
+
+  .btn-container {
+    display: flex;
+    justify-content: flex-end;
+  }
+</style>
+
+<div class="container py-5">
+  <h2 class="mb-4">Mock Test Instructions: {{ quiz.quiz_name }}</h2>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <p class="mb-3">
+        You are about to begin a full-length SSC CGL-style mock test designed to simulate the real exam experience.
+      </p>
+
+      <p class="mb-2"><strong>Test Structure:</strong></p>
+      <p>
+        This mock test consists of <strong>{{ quiz.part_count }}</strong> sections, each containing <strong>{{ quiz.questions_per_part }}</strong> questions, making a total of <strong>{{ quiz.total_questions }}</strong> questions.
+      </p>
+      <ul class="compact-list">
+        <li><strong>Sections Covered:</strong>
+          {% for part_num, part_name in quiz.part_names.items %}
+            {{ part_name }}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </li>
+        <li>Questions follow the exact format and difficulty level of the SSC CGL exam.</li>
+        <li>You are <strong>not required</strong> to attempt all questions. Attempt only the ones you're confident about.</li>
+        <li>You can navigate between questions within a test using the <strong>question navigation button</strong>.</li>
+        <li>You can switch between sections using the tab navigation at the top.</li>
+        <li>You can only <strong>submit the test</strong> from the last question of the final section.</li>
+      </ul>
+
+      <p class="mt-4 mb-2"><strong>Marking Scheme:</strong></p>
+      <ul class="compact-list">
+        <li>+2 marks for each correct answer</li>
+        <li>-0.5 mark for each incorrect answer</li>
+        <li>0 marks for unattempted questions</li>
+      </ul>
+
+      <p class="mt-4 mb-2"><strong>Important Notes:</strong></p>
+      <ul class="compact-list">
+        <li>Do <strong>not refresh or close</strong> the browser tab during the test to avoid losing progress.</li>
+        <li><strong>Recommended:</strong> Use a desktop or laptop for the best test-taking experience.</li>
+      </ul>
+
+      <form method="POST" action="{% url 'super_quiz_paginated' quiz.quiz_id %}" class="mt-4">
+        {% csrf_token %}
+        <div class="btn-container">
+          <button type="submit" class="btn btn-start btn-lg">Start Test</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

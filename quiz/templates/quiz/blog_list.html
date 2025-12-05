@@ -1,0 +1,332 @@
+{% extends 'quiz/base.html' %}
+{% block title %}Blog - Pro Prelims{% endblock %}
+
+{% block content %}
+<style>
+  /* Hero Section */
+  .blog-hero {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 4rem 0;
+    text-align: center;
+    border-radius: 15px; /* Consistent border radius */
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 1s ease-out;
+  }
+  .blog-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent);
+    animation: rotateGlow 15s linear infinite;
+  }
+  .blog-hero h1 {
+    font-weight: 800;
+    font-size: 3rem;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .blog-hero p {
+    font-size: 1.2rem;
+    opacity: 0.9;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* Blog Cards */
+  .blog-card {
+    background: white;
+    border: none;
+    border-radius: 15px; /* Consistent border radius */
+    overflow: hidden;
+    transition: transform 0.4s ease;
+    position: relative;
+    animation: cardFadeIn 0.6s ease-out;
+    animation-delay: calc(0.1s * var(--card-index));
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .blog-card:hover {
+    transform: translateY(-12px);
+  }
+  .blog-card-header {
+    color: #333;
+    padding: 1.5rem 1.5rem 0rem 1.5rem;
+    font-weight: bold;
+    font-size: 1.3rem;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+  }
+  .blog-card-body {
+    padding: 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex-grow: 1; /* Allow body to grow and push button down */
+  }
+  .blog-card-snippet {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 1; /* Allow snippet to take available space */
+  }
+  .blog-card-footer {
+    padding: 0 1.5rem 1.5rem 1.5rem;
+    display: flex;
+    justify-content: space-between; /* Space between likes and button */
+    align-items: center;
+  }
+  .blog-card-btn {
+    background: linear-gradient(135deg, var(--accent-yellow), #f7b733);
+    color: #333;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 15px; /* Consistent border radius */
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.2s ease;
+    display: inline-block;
+  }
+  .blog-card-btn:hover {
+    background: linear-gradient(135deg, #ffd966, #f7b733);
+    transform: scale(1.05);
+    color: #333;
+    text-decoration: none;
+  }
+
+  /* Likes display in card */
+  .blog-card-likes {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6c757d;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  .blog-card-likes .like-icon {
+    color: #8b5cf6;
+    font-size: 16px;
+  }
+  .blog-card-likes .like-count {
+    color: #495057;
+  }
+
+  /* Pagination */
+  .pagination {
+    gap: 0.5rem;
+  }
+  .pagination .page-item {
+    margin: 0 2px;
+  }
+  .pagination .page-link {
+    border: none;
+    color: #333;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+    border-radius: 15px; /* Consistent border radius */
+  }
+  .pagination .prev-btn .page-link {
+    border-radius: 15px; /* Consistent border radius */
+  }
+  .pagination .next-btn .page-link {
+    border-radius: 15px; /* Consistent border radius */
+  }
+  .pagination .page-item:not(.prev-btn):not(.next-btn) .page-link {
+    border-radius: 15px; /* Consistent border radius */
+  }
+  .pagination .page-link:hover {
+    background: var(--accent-yellow);
+    color: white;
+    transform: scale(1.1);
+  }
+  .pagination .active .page-link {
+    background: var(--primary-gradient);
+    color: white;
+    transform: scale(1.1);
+  }
+  .pagination .disabled .page-link {
+    color: #ccc;
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cardFadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes rotateGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .blog-hero h1 {
+      font-size: 2.2rem;
+    }
+    .blog-hero p {
+      font-size: 1rem;
+    }
+    .blog-card-header {
+      font-size: 1.2rem;
+    }
+  }
+  @media (max-width: 576px) {
+    /* Disable animations for mobile */
+    .blog-hero {
+      padding: 2rem 0; /* Reduced padding for mobile */
+      margin: 0.75rem 0rem;
+      margin-top: 0rem;
+      border-radius: 15px; /* Consistent border radius */
+      animation: none; /* Disable fadeIn animation */
+    }
+    .blog-hero::before {
+      animation: none; /* Disable rotating glow animation */
+    }
+    .blog-card {
+      margin: 0.75rem -0.5rem; /* Same margin as hero section */
+      border-radius: 15px; /* Consistent border radius */
+      animation: none; /* Disable cardFadeIn animation */
+      transition: none; /* Disable hover transform */
+    }
+    .blog-card:hover {
+      transform: none; /* Disable hover lift effect */
+    }
+    .blog-card-btn {
+      transition: none; /* Disable button transitions */
+    }
+    .blog-card-btn:hover {
+      transform: none; /* Disable button scale effect */
+    }
+    .pagination .page-link {
+      transition: none; /* Disable pagination transitions */
+    }
+    .pagination .page-link:hover {
+      transform: none; /* Disable pagination scale effect */
+    }
+    .blog-hero h1 {
+      font-size: 1.6rem;
+    }
+    .blog-hero p {
+      font-size: 0.9rem;
+      margin: 1rem 1.5rem;
+    }
+    .blog-card-header {
+      font-size: 1rem;
+      min-height: 50px;
+      padding: 1rem 1rem 0 1rem; /* Adjusted padding for mobile */
+    }
+    .blog-card-body {
+      padding: 0.75rem 1rem; /* Adjusted padding for mobile */
+      gap: 0.5rem;
+    }
+    .blog-card-footer {
+      padding: 0 1rem 1rem 1rem; /* Adjusted padding for mobile */
+    }
+    .blog-card-snippet {
+      font-size: 0.85rem;
+    }
+    .blog-card-btn {
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      border-radius: 15px; /* Consistent border radius */
+    }
+    .blog-card-likes {
+      font-size: 0.9rem;
+    }
+    .pagination .page-link {
+      padding: 0.3rem 0.7rem;
+      font-size: 0.85rem;
+      border-radius: 15px; /* Consistent border radius */
+    }
+  }
+</style>
+
+<div class="blog-hero">
+  <h1><i class="fa fa-book me-2"></i>Pro Prelims Blog</h1>
+  <p>Discover expert tips and strategies to ace your UPSC, SSC, and competitive exams!</p>
+</div>
+
+<div class="container">
+  <!-- Blog Posts List -->
+  <div class="row">
+    {% for post in page_obj %}
+      <div class="col-12 mb-0" style="--card-index: {{ forloop.counter0 }};">
+        <div class="blog-card">
+          <div class="blog-card-header">
+            {{ post.title }}
+          </div>
+          <div class="blog-card-body">
+            {% load quiz_extras %}
+            <p class="blog-card-snippet">
+              {{ post.content|strip_markdown|truncatewords:90 }}
+            </p>
+          </div>
+          <div class="blog-card-footer mt-1">
+            <div class="blog-card-likes">
+              <i class="fa fa-heart like-icon"></i>
+              <span class="like-count">
+                {{ post.like_count }} {% if post.like_count == 1 %}like{% else %}likes{% endif %}
+              </span>
+            </div>
+            <a href="{% url 'blog_detail' post.post_id %}" class="blog-card-btn">Read More</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="alert alert-info text-center">No blog posts available yet.</div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if page_obj.has_other_pages %}
+    <nav class="mt-5">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <li class="page-item prev-btn">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          </li>
+        {% else %}
+          <li class="page-item prev-btn disabled">
+            <span class="page-link">Prev</span>
+          </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+          <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+          </li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item next-btn">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+          </li>
+        {% else %}
+          <li class="page-item next-btn disabled">
+            <span class="page-link">Next</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</div>
+{% endblock %}

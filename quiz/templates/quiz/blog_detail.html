@@ -1,0 +1,297 @@
+{% extends 'quiz/base.html' %}
+{% block title %}{{ post.title }} - Pro Prelims{% endblock %}
+
+{% block content %}
+<style>
+  .blog-hero {
+    background: var(--primary-gradient);
+    color: white;
+    padding: 4rem 2rem;
+    text-align: center;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .blog-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+    opacity: 0.5;
+  }
+  .blog-hero h1 {
+    font-weight: 700;
+    font-size: 2.5rem;
+    position: relative;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  .blog-content {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #333;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  .blog-content h2, .blog-content h3 {
+      margin-top: 2rem;
+    margin-bottom: 1.5rem;
+    color: #222;
+  }
+
+  .blog-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .blog-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .blog-content strong{
+    font-weight: 500;
+  }
+
+  .blog-content ul, .blog-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    margin-top:0rem;
+  }
+
+  .blog-content blockquote {
+    border-left: 4px solid var(--accent-yellow);
+    padding-left: 1rem;
+    font-style: italic;
+    color: #555;
+    margin: 1.5rem 0;
+  }
+
+  .blog-content img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 1.5rem 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  /* Clean Like Button Styles */
+  .like-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    margin: 1.5rem 0;
+  }
+
+  .like-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #6c757d;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .like-btn:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: #495057;
+  }
+
+  .like-btn.liked {
+    background: #fff5f5;
+    border-color: #fecaca;
+    color: #8b5cf6;
+  }
+
+  .like-btn.liked:hover {
+    background: #fef2f2;
+    border-color: #f87171;
+  }
+
+  .like-icon {
+    font-size: 14px;
+    transition: all 0.2s ease;
+  }
+
+  .like-btn.liked .like-icon {
+    ccolor: #8b5cf6;
+  }
+
+  .like-count {
+    background: #f8f9fa;
+    color: #6c757d;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    border: 1px solid #e9ecef;
+  }
+
+  .login-like-btn {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 8px 16px;
+    color: #6c757d;
+    font-weight: 500;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .login-like-btn:hover {
+    background: #e9ecef;
+    border-color: #dee2e6;
+    color: #495057;
+    text-decoration: none;
+  }
+
+  .back-btn {
+    display: inline-block;
+    background: var(--primary-gradient);
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.3s ease, transform 0.3s ease;
+  }
+  .back-btn:hover {
+    transform: scale(1.05);
+  }
+
+  /* Loading animation */
+  .like-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  @media (max-width: 576px) {
+    .blog-hero h1 {
+      font-size: 1.8rem;
+    }
+    .blog-content h2 {
+      font-size: 1.5rem;
+    }
+    .blog-content h3 {
+      font-size: 1.25rem;
+    }
+    .blog-content {
+      font-size: 1rem;
+    }
+    .back-btn {
+      padding: 0.5rem 1rem;
+    }
+    .like-container {
+      flex-wrap: wrap;
+    }
+  }
+</style>
+
+<div class="blog-hero">
+  <h1>{{ post.title }}</h1>
+</div>
+
+<div class="blog-content">
+{% load markdown_extras %}
+{{ post.content|markdownify|safe }}
+
+<!--  {% for book in recommended_books %}-->
+<!--  <p class="mb-1 small">{{ book.title }}</p>-->
+<!--  <a href="{{ book.link }}" target="_blank" rel="noopener noreferrer" class="small" style="align">-->
+<!--    Buy on Amazon <i class="fa fa-external-link-alt ms-1"></i>-->
+<!--  </a>-->
+<!--  {% endfor %}-->
+
+  <div class="like-container">
+    {% if user.is_authenticated %}
+      <button class="like-btn {% if user in post.likes.all %}liked{% endif %}"
+              data-post-id="{{ post.post_id }}"
+              data-liked="{% if user in post.likes.all %}true{% else %}false{% endif %}"
+              onclick="toggleLike({{ post.post_id }})">
+        <i class="fa fa-heart like-icon"></i>
+        <span class="like-text">
+          {% if user in post.likes.all %}Liked{% else %}Like{% endif %}
+        </span>
+      </button>
+      <span class="like-count" id="like-count-{{ post.post_id }}">
+        {{ post.like_count }} {% if post.like_count == 1 %}like{% else %}likes{% endif %}
+      </span>
+    {% else %}
+      <a href="{% url 'account_login' %}?next={{ request.path }}" class="login-like-btn">
+        <i class="fa fa-heart"></i>
+        <span>Login to Like</span>
+      </a>
+      <span class="like-count" id="like-count-{{ post.post_id }}">
+        {{ post.like_count }} {% if post.like_count == 1 %}like{% else %}likes{% endif %}
+      </span>
+    {% endif %}
+  </div>
+
+  <div class="text-center mt-5">
+    <a href="{% url 'blog_list' %}" class="back-btn"><i class="fa fa-arrow-left me-2"></i>Back to Blog</a>
+  </div>
+</div>
+
+<script>
+function toggleLike(postId) {
+  const btn = document.querySelector(`button[data-post-id="${postId}"]`);
+  const likeText = btn.querySelector('.like-text');
+  const likeIcon = btn.querySelector('.like-icon');
+  const likeCount = document.getElementById(`like-count-${postId}`);
+  const isLiked = btn.dataset.liked === 'true';
+
+  // Add loading state
+  btn.classList.add('loading');
+  likeIcon.className = 'fa fa-spinner like-icon';
+
+  fetch(`/blog/${postId}/like/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+      'Content-Type': 'application/json',
+    },
+  })
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  })
+  .then(data => {
+    if (data.status === 'success') {
+      // Update button state
+      btn.dataset.liked = data.liked;
+      btn.classList.toggle('liked', data.liked);
+      likeText.textContent = data.liked ? 'Liked' : 'Like';
+
+      // Update like count
+      const countText = data.like_count === 1 ? '1 like' : `${data.like_count} likes`;
+      likeCount.textContent = countText;
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Failed to process like. Please try again.');
+  })
+  .finally(() => {
+    // Remove loading state
+    btn.classList.remove('loading');
+    likeIcon.className = 'fa fa-heart like-icon';
+  });
+}
+</script>
+
+{% endblock %}

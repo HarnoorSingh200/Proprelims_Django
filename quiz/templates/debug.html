@@ -1,0 +1,33 @@
+<!-- Create this as: templates/debug.html -->
+{% extends "quiz/base.html" %}
+
+{% block title %}Debug - Pro Prelims{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Debug Information</h2>
+
+    <div class="alert alert-info">
+        <h4>User Status:</h4>
+        <p><strong>Authenticated:</strong> {{ user.is_authenticated }}</p>
+        <p><strong>User:</strong> {{ user }}</p>
+        <p><strong>Email:</strong> {{ user.email|default:"N/A" }}</p>
+    </div>
+
+    <div class="alert alert-secondary">
+        <h4>Available URLs:</h4>
+        <ul>
+            <li><a href="{% url 'account_login' %}">Login</a></li>
+            <li><a href="{% url 'account_signup' %}">Signup</a></li>
+            <li><a href="{% url 'account_logout' %}">Logout</a></li>
+            <li><a href="{% url 'home' %}">Home</a></li>
+        </ul>
+    </div>
+
+    <div class="alert alert-warning">
+        <h4>Site Configuration:</h4>
+        <p><strong>SITE_ID:</strong> {{ settings.SITE_ID }}</p>
+        <p><strong>DEBUG:</strong> {{ settings.DEBUG }}</p>
+    </div>
+</div>
+{% endblock %}
